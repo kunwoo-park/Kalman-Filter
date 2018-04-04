@@ -1,0 +1,186 @@
+Scalar Kalman Filter (discrete)
+
+I typed all equation with LaTeX. 
+
+\documentclass{article} 
+\usepackage{amsmath}
+
+ \begin{document} 
+ \section{Kalman Filter Derivation}
+ \subsection{Scalar Kalman Filter} % This command makes a subsection title.
+\subsubsection{Defining the Problem}
+
+\begin{equation}
+x_{j} = ax_{j-1} +bu_{j}    
+\end{equation}
+
+\begin{equation}
+x_{j} = ax_{j-1}+bu_{j} + w_{j}
+\end{equation}
+
+\begin{equation}
+z_j =hx_j + v_j
+\end{equation}
+
+\begin{equation}
+\hat{x}_{j}^- = a\hat{x}_{j-1} +bu_{j}
+\end{equation}
+
+\begin{equation}
+Residual = z_j - \hat{z}_j = z_j - h\hat{x}_j^-
+\end{equation}
+
+\begin{equation}
+\hat{x}_j = \hat{x}_j^- + k(Residual) = \hat{x}_j^- + k\left(z_j - h\hat{x}_j^-\right)
+\end{equation}
+
+\begin{equation}
+e_j^- = x_j - \hat{x}_j^- 
+\end{equation}
+
+\begin{equation}
+e_j = x_j - \hat{x}_j
+\end{equation}
+
+\begin{equation}
+p_j^{-}=  E\left\{  \left( e_j^- \right)^2  \right\}
+\end{equation}
+
+\begin{equation}
+p_j=  E\left\{  \left( e_j \right)^2  \right\} \\
+\end{equation}
+
+\subsubsection{Finding Kalman Gain}
+\begin{equation}
+p_j=  E\left\{  \left( x_j - \hat{x}_j \right)^2  \right\} \\
+\end{equation}
+
+\begin{equation}
+p_j=  E\left\{  \left( x_j - \hat{x}_j^- - k\left(z_j - h\hat{x}_j^-\right) \right)^2  \right\} 
+\end{equation}
+
+\begin{equation}
+\begin{split}
+\frac {\partial p_j}{\partial k} = 0 = \frac {\partial E\left\{  \left( x_j - \hat{x}_j^- - k\left(z_j - h\hat{x}_j^-\right) \right)^2  \right\} }{\partial k} \\
+=2E\left\{  \left( x_j - \hat{x}_j^- - k\left(z_j - h\hat{x}_j^-\right) \right)\left(z_j - h\hat{x}_j^- \right)  \right\} \\
+=2E\left\{   x_j z_j - \hat{x}_j^- z_j - kz_j^2 + kh\hat{x}_j^-z_j - hx_j\hat{x}_j^- + h\left(\hat{x}_j^-\right)^2 + khz_j\hat{x}_j^- - kh^2\left(\hat{x}_j^-\right)^2  \right\} \\
+=2E\left\{   x_j z_j - \hat{x}_j^- z_j - hx_j\hat{x}_j^- + h\left(\hat{x}_j^-\right)^2 \right\} -2kE\left\{z_j^2 - 2h\hat{x}_j^-z_j + h^2\left(\hat{x}_j^-\right)^2  \right\}\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+k= \frac{E\left\{   x_j z_j - \hat{x}_j^- z_j - hx_j\hat{x}_j^- + h\left(\hat{x}_j^-\right)^2 \right\}}{E\left\{z_j^2 - 2h\hat{x}_j^-z_j + h^2\left(\hat{x}_j^-\right)^2  \right\}}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+numerator=  E\left\{   x_j z_j - \hat{x}_j^- z_j - hx_j\hat{x}_j^- + h\left(\hat{x}_j^-\right)^2 \right\} \\
+=E\left\{   x_j \left(hx_j + v_j\right) - \hat{x}_j^- \left(hx_j + v_j\right) - hx_j\hat{x}_j^- + h\left(\hat{x}_j^-\right)^2 \right\} \\ 
+=E\left\{   hx_j^2 + x_jv_j - h\hat{x}_j^-x_j - \hat{x}_j^-v_j - hx_j\hat{x}_j^- + h\left(\hat{x}_j^-\right)^2 \right\} \\
+=E\left\{   hx_j^2 - 2h\hat{x}_j^-x_j +h\left(\hat{x}_j^-\right)^2 + \left(x_j - \hat{x}_j^-\right)v_j \right\}\\
+=E\left\{   hx_j^2 - 2h\hat{x}_j^-x_j +h\left(\hat{x}_j^-\right)^2 +e_j^-v_j \right\}\\
+=E\left\{   hx_j^2 - 2h\hat{x}_j^-x_j +h\left(\hat{x}_j^-\right)^2 \right\} \\
+=hE\left\{\left(x_j - \hat{x}_j^- \right)^2\right\} = hE\left\{\left(e_j^-\right)^2\right\} \\
+=hp_j^-
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+denominator=  E\left\{z_j^2 - 2h\hat{x}_j^-z_j + h^2\left(\hat{x}_j^-\right)^2  \right\} \\
+=E\left\{\left(hx_j + v_j\right)^2 - 2h\hat{x}_j^-\left(hx_j + v_j\right) + h^2\left(\hat{x}_j^-\right)^2  \right\} \\ 
+=E\left\{h^2x_j^2 + 2hx_jv_j + v_j^2 -2h^2\hat{x}_j^-x_j -2h\hat{x}_j^-v_j + h^2\left(\hat{x}_j^-\right)^2   \right\} \\
+=E\left\{h^2x_j^2 - 2h^2\hat{x}_j^-x_j + h^2\left(\hat{x}_j^-\right)^2 +v_j^2 + 2h\left(x_j - \hat{x}_j^-\right)v_j \right\}\\
+=E\left\{h^2x_j^2 - 2h^2\hat{x}_j^-x_j + h^2\left(\hat{x}_j^-\right)^2 +v_j^2 + 2h\left(e_j^-\right)v_j \right\}\\
+=E\left\{h^2x_j^2 - 2h^2\hat{x}_j^-x_j + h^2\left(\hat{x}_j^-\right)^2 +v_j^2\right\}\\
+=h^2E\left\{x_j^2 - 2\hat{x}_j^-x_j + \left(\hat{x}_j^-\right)^2\right\} +E\left\{v_j^2\right\}\\
+=h^2p_j^- + R\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+k = \frac{hp_j^-}{h^2p_j^- + R} 
+\end{equation}
+
+\subsubsection{Finding the a priori covariance}
+\begin{equation}
+\begin{split}
+p_j^- = E\left\{\left(x_j-\hat{x}_j^-\right)^2\right\} \\
+= E\left\{\left(ax_{j-1}+bu_{j} + w_{j}-\left(a\hat{x}_{j-1} +bu_{j}  \right)\right)^2\right\} \\ 
+= E\left\{\left(a\left(x_{j-1}-\hat{x}_{j-1}\right)+w_j\right)^2\right\} \\
+= E\left\{a^2\left(x_{j-1}-\hat{x}_{j-1}\right)^2+ 2aw_j\left(x_{j-1}-\hat{x}_{j-1}\right) +w_j^2\right\} \\
+= E\left\{a^2\left(x_{j-1}-\hat{x}_{j-1}\right)^2+ 2aw_je_{j-1} +w_j^2\right\} \\
+= a^2E\left\{\left(x_{j-1}-\hat{x}_{j-1}\right)^2\right\}+ 2aE\left\{w_je_{j-1}\right\} +E\left\{w_j^2\right\} \\
+= a^2p_{j-1} + Q
+\end{split}
+\end{equation}
+
+\subsubsection{Finding the a posteriori covariance}
+\begin{equation}
+\begin{split}
+p_j = E\left\{\left(x_j-\hat{x}_j\right)^2\right\} \\
+= E\left\{\left(x_j-\left(\hat{x}_j^- + k\left(z_j - h\hat{x}_j^-\right)\right)\right)^2\right\} \\
+= E\left\{\left(x_j-\left(\hat{x}_j^- + k\left(\left(hx_j + v_j\right) - h\hat{x}_j^-\right)\right)\right)^2\right\} \\
+= E\left\{\left(x_j-\hat{x}_j^- - khx_j-kv_j + kh\hat{x}_j^-\right)^2\right\} \\
+= E\left\{\left(\left(x_j-\hat{x}_j^-\right)\left(1-kh\right)-kv_j\right)^2\right\} \\
+= E\left\{\left(x_j-\hat{x}_j^-\right)^2\left(1-kh\right)^2-2kv_j\left(x_j-\hat{x}_j^-\right)\left(1-kh\right)+k^2v_j^2\right\} \\
+= E\left\{\left(x_j-\hat{x}_j^-\right)^2\left(1-kh\right)^2\right\} - E\left\{2kv_j\left(x_j-\hat{x}_j^-\right)\left(1-kh\right)\right\} + E\left\{k^2v_j^2\right\}\\
+= \left(1-kh\right)^2E\left\{\left(x_j-\hat{x}_j^-\right)^2\right\} - 2k\left(1-kh\right)E\left\{v_j\left(x_j-\hat{x}_j^-\right)\right\} + k^2E\left\{v_j^2\right\}\\
+= \left(1-kh\right)^2E\left\{\left(e_j^-\right)^2\right\} - 2k\left(1-kh\right)E\left\{v_je_j^-\right\} + k^2E\left\{v_j^2\right\}\\
+= \left(1-kh\right)^2E\left\{\left(e_j^-\right)^2\right\} - 2k\left(1-kh\right)E\left\{v_je_j^-\right\} + k^2E\left\{v_j^2\right\}\\
+=\left(1-hk\right)^2p_j^- + k^2R\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+R=\frac{p_j^-\left(h-h^2k\right)}{k}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+p_j=\left(1-hk\right)^2p_j^- + k^2\frac{p_j^-\left(h-h^2k\right)}{k}\\
+=p_j^-(1-2hk + h^2k^2 +kh - h^2k^2)\\
+=p_j^-(1-hk)\\
+\end{split}
+\end{equation}
+
+\subsubsection{Review}
+\begin{equation}
+x_{j} = ax_{j-1}+bu_{j} + w_{j}
+\end{equation}
+
+\begin{equation}
+z_j =hx_j + v_j
+\end{equation}
+
+\begin{equation}
+\hat{x}_{j}^- = a\hat{x}_{j-1} +bu_{j}
+\end{equation}
+
+\begin{equation}
+p_{j}^- = a^2p_{j-1} +Q
+\end{equation}
+
+\begin{equation}
+k_j = \frac{hp_j^-}{h^2p_j^- + R} 
+\end{equation}
+
+\begin{equation}
+\hat{x}_j = \hat{x}_j^- + k_j\left(z_j-h\hat{x}_j^-\right)
+\end{equation}
+
+\begin{equation}
+p_j = p_j^-\left(1-hk_j\right) 
+\end{equation}
+
+ \subsection{Kalman Filter}
+
+
+ \subsection{Extended Kalman Filter}
+
+
+\end{document}
+
+
+reference:
+[1] http://www.swarthmore.edu/NatSci/echeeve1/Ref/Kalman/ScalarKalman.html
